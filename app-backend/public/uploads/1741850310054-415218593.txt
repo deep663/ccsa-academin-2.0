@@ -1,0 +1,46 @@
++-------------+       +--------------------+       +--------------+
+|   Users     |       |  Students          |       |   Teachers   |
+|-------------|       |--------------------|       |--------------|
+| id (PK)     |<----->| id (PK, FK)        |       | id (PK, FK)  |
+| name        |       | roll_no            |       | teacher_code |
+| email       |       | course_id    	   |       +--------------+
+| password    |       | semester_id  	   |
+| role        |       | year_of_enrollment |
+| phone       |       +--------------------+
+| isVerified  | 
++-------------+
+
++-------------+       +---------------+      +----------------------+
+|  Courses    |<----->|  Semesters    |<---->|  Subjects            |
+|-------------|       |---------------|      |----------------------|
+| id (PK)     |       | id (PK)       |      | id (PK)              |
+| name        |       | course_id (FK)|      | name                 |
+| duration    |       +---------------+      | type ('Theory'/'Lab')|
+|	      |	      			     | teacher (FK)	    |
++-------------+                              | semester_id (FK)     |
+                                             +----------------------+
+
++--------------+       +------------------+       +-------------------+
+|  Assignments |       |  Notes           |       |  Attendance       |
+|--------------|       |------------------|       |-------------------|
+| id (PK)      |       | id (PK)          |       | id (PK)           |
+| subject_id   |       | subject_id (FK)  |       | student_id (FK)   |
+| teacher_id   |       | teacher_id (FK)  |       | subject_id (FK)   |
+| title        |       | title            |       | date              |
+| description  |       | content          |       | status (P/A)      |
+| due_date     |       | attachment_url   |       +-------------------+
+| attachment   |       +------------------+
++--------------+
+
++-----------------+       +------------------+       +-------------------+
+| Marks           |       | Projects         |       | Student_Assignments|
+|-----------------|       |------------------|       |-------------------|
+| id (PK)         |       | id (PK)          |       | id (PK)           |
+| student_id (FK) |       | semester_id (FK) |       | assignment_id (FK)|
+| subject_id (FK) |       | student_id (FK)  |       | student_id (FK)   |
+| marks_obtained  |       | project_name     |       | submitted_file_url|
+| total_marks     |       | description      |       | submitted_at      |
+| exam_type       |       | github_link      |       +-------------------+
++-----------------+       | report_pdf_url   |
+                          | submitted_at     |
+                          +------------------+

@@ -1,0 +1,16 @@
+
+
+    Business Card Holder
+        "Generate OpenSCAD code for a business card holder that can accommodate standard business cards. The holder should have a base, a front lip to prevent cards from slipping out, and a back that is slightly tilted. Please suggest dimensions that would be functional for this purpose."
+
+    Storage Box
+        "Create an OpenSCAD script for a storage box designed to hold small items. The box should have a lid and internal compartments. Suggest dimensions that would provide adequate space for various items while maintaining structural integrity."
+
+    Planter Design
+        "Write OpenSCAD code for a planter that can hold a small plant. The design should include drainage holes and a base. Please provide dimensions that would be suitable for a typical small houseplant."
+
+    Wall Shelf
+        "Generate OpenSCAD code for a wall shelf that can hold books and decorative items. The shelf should be sturdy and have brackets for mounting. Suggest dimensions that would be practical for a standard living room setup."
+
+    Picture Frame
+        "Create an OpenSCAD script for a picture frame that can hold a 5x7 inch photo. Include a stand for displaying the frame on a table. Please provide dimensions that would accommodate the photo and the stand."
