@@ -310,6 +310,7 @@ import {
                                         href={sub.project_link}
                                         target="_blank"
                                         rel="noreferrer"
+                                        className="text-[#4f90d1] hover:underline"
                                       >
                                         {sub.project_link}
                                       </a>
@@ -324,7 +325,7 @@ import {
                                       href={file}
                                       target="_blank"
                                       rel="noreferrer"
-                                      style={{ marginRight: 8 }}
+                                      className="mr-8 text-[#4f90d1] font-bold hover:underline"
                                     >
                                       View File {idx + 1}
                                     </a>
