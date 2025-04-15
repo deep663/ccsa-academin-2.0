@@ -10,10 +10,16 @@ const submitAssignment = asyncHandler(async (req, res) => {
   const { assignment, student } = req.body;
 
   if (!assignment || !student || !req.files) {
-    throw new ApiError(400, "Missing required fields: assignment, student, or file");
+    throw new ApiError(
+      400,
+      "Missing required fields: assignment, student, or file"
+    );
   }
 
-  const alreadySubmitted = await SubmittedAssignment.findOne({ assignment, student });
+  const alreadySubmitted = await SubmittedAssignment.findOne({
+    assignment,
+    student,
+  });
 
   if (alreadySubmitted) {
     throw new ApiError(409, "Assignment already submitted");
@@ -23,11 +29,17 @@ const submitAssignment = asyncHandler(async (req, res) => {
     return `${req.protocol}://${req.get("host")}/uploads/${file.filename}`;
   });
 
-  const submission = await SubmittedAssignment.create({ assignment, student, files: fileLinks });
+  const submission = await SubmittedAssignment.create({
+    assignment,
+    student,
+    files: fileLinks,
+  });
 
   return res
     .status(201)
-    .json(new ApiResponse(201,"Assignment submitted successfully", submission));
+    .json(
+      new ApiResponse(201, "Assignment submitted successfully", submission)
+    );
 });
 
 const getSubmissionsbyAssignment = asyncHandler(async (req, res) => {
@@ -38,14 +50,18 @@ const getSubmissionsbyAssignment = asyncHandler(async (req, res) => {
       path: "assignment",
     })
     .populate({
-        path: "student",
-        populate: {
-            path: "user",
-            model: "User",
-            select: "name email roll_no"
-        },
+      path: "student",
+      populate: {
+        path: "user",
+        model: "User",
+        select: "name email roll_no",
+      },
     })
     .sort({ createdAt: -1 });
+
+  if (!submissions) {
+    throw new ApiError(404, "Submissions not found");
+  }
 
   return res
     .status(200)
@@ -53,22 +69,25 @@ const getSubmissionsbyAssignment = asyncHandler(async (req, res) => {
 });
 
 const getStudentSubmissions = asyncHandler(async (req, res) => {
-    const { studentId } = req.params;
-    console.log(studentId);
-    const submissions = await SubmittedAssignment.find({ student: studentId })
-      .populate({
-        path: "assignment",
-        select: "title description dueDate file",
-      })
-      .sort({ createdAt: -1 });
-  
-    return res
-      .status(200)
-      .json(new ApiResponse(200, "Fetched student submissions", submissions));
-  });
+  const { studentId } = req.params;
+  const submissions = await SubmittedAssignment.find({ student: studentId })
+    .populate({
+      path: "assignment",
+      select: "title description dueDate file",
+    })
+    .sort({ createdAt: -1 });
+
+  if (!submissions) {
+    throw new ApiError(404, "Submissions not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Fetched student submissions", submissions));
+});
 
 module.exports = {
   submitAssignment,
   getStudentSubmissions,
-  getSubmissionsbyAssignment
+  getSubmissionsbyAssignment,
 };

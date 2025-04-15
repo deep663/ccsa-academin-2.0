@@ -4,14 +4,14 @@ const ApiResponse = require("../utils/ApiResponse.js");
 const asyncHandler = require("../utils/asyncHandler.js");
 
 const getTeachers = asyncHandler(async (req, res) => {
-  const teachers = await Teacher.find().populate("user", ("_id","name"));
+  const teachers = await Teacher.find().populate("user", ("-password", "-refreshToken"));
   return res
     .status(200)
     .json(new ApiResponse(200, "Teachers fetched successfully", teachers));
 });
 
 const getTeacher = asyncHandler(async (req, res) => {
-  const teacher = await Teacher.find({user: req.user._id});
+  const teacher = await Teacher.find({user: req.user._id}).populate("user", ("-password", "-refreshToken"));
   if (!teacher) {
     throw new ApiError(404, "Teacher not found");
   }

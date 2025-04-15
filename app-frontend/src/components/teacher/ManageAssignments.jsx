@@ -77,7 +77,7 @@ const ManageAssignments = () => {
     setSemesters([]);
     setSubjects([]);
     if (!course) return;
-    setSemesters(course === "bca" ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4]);
+    setSemesters(course === "bca" ? [1, 2, 3, 4, 5, 6, 7, 8] : [1, 2, 3, 4]);
   };
 
   const fetchSubjects = async (semester) => {

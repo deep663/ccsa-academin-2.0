@@ -5,6 +5,7 @@ import { logout } from "../utils/userSlice";
 import { signout } from "../utils/api";
 import Toaster from "./Toaster";
 import OverlayLoading from "./OverlayLoading";
+import { Avatar } from "@mui/material";
 
 const Navbar = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -16,14 +17,13 @@ const Navbar = () => {
   const [loading, setLoading] = useState(false);
   const userMenuRef = useRef(null);
 
-
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {
         setIsUserMenuOpen(false);
       }
     };
-    
+
     const handleClickOutside = (event) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
         setIsUserMenuOpen(false);
@@ -55,18 +55,17 @@ const Navbar = () => {
     } catch (error) {
       console.error("Error signing out:", error);
     } finally {
-    setToast({ show: true, message: "Logging Out!", type: "warning",  })
-    setIsUserMenuOpen(false);
-    setIsLoggedIn(false);
-    setLoading(false);
-    navigate("/");
+      setToast({ show: true, message: "Logging Out!", type: "warning" });
+      setIsUserMenuOpen(false);
+      setIsLoggedIn(false);
+      setLoading(false);
+      navigate("/");
     }
   };
 
   return (
     <nav className="bg-[#192f59] text-white border-b border-gray-200 sticky top-0 z-50">
-
-      {loading && (<OverlayLoading />)}
+      {loading && <OverlayLoading />}
 
       <div className="max-w-full flex flex-wrap items-center justify-between mx-auto p-4">
         {/* Logo */}
@@ -85,11 +84,13 @@ const Navbar = () => {
                 className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
               >
-                <img
-                  className="w-8 h-8 rounded-full"
-                  src={user.avatar}
-                  alt="User"
-                />
+                <Avatar key={user?.avatar} sx={{ width: 40, height: 40, fontSize: 18 }}>
+                  {user?.avatar ? (
+                    <img src={user?.avatar} />
+                  ) : (
+                    user?.name?.charAt(0)
+                  )}
+                </Avatar>
               </button>
 
               {/* Dropdown Menu */}

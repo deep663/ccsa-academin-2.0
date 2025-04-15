@@ -29,6 +29,7 @@ import ViewNotes from "./components/student/ViewNotes";
 import StudentAssignments from "./components/student/ViewAssignments";
 import StudentMarks from "./components/student/ViewMarks";
 import ProjectSubmission from "./components/student/ProjectSubmission";
+import ViewSubmissions from "./components/teacher/ViewSubmissions";
 
 function App() {
   const dispatch = useDispatch();
@@ -81,11 +82,15 @@ function App() {
               />
               <Route path="teacher/manage-notes" element={<ManageNotes />} />
               <Route path="teacher/manage-marks" element={<ManageMarks />} />
+              <Route path="teacher/submissions" element={<ViewSubmissions />} />
             </Route>
 
             <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
               <Route path="student/notes" element={<ViewNotes />} />
-              <Route path="student/assignments" element={<StudentAssignments />} />
+              <Route
+                path="student/assignments"
+                element={<StudentAssignments />}
+              />
               <Route path="student/marks" element={<StudentMarks />} />
               <Route path="student/projects" element={<ProjectSubmission />} />
             </Route>

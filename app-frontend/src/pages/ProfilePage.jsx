@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { editProfile, getProfile } from "../utils/api";
 import InlineLoader from "../components/InlineLoader";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Avatar, Button } from "@mui/material";
 import { FaArrowLeft } from "react-icons/fa";
+import { updateField } from "../utils/userSlice";
+import { useDispatch } from "react-redux";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
@@ -14,6 +16,7 @@ const ProfilePage = () => {
   const [profilePic, setProfilePic] = useState(null);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const fetchProfile = async () => {
     try {
@@ -63,6 +66,7 @@ const ProfilePage = () => {
       await editProfile(formData);
       setEditing(false);
       fetchProfile();
+      dispatch(updateField({ key: "user.avatar", value: `${profilePic}` }));
     } catch (err) {
       console.error("Failed to update profile", err);
     } finally {
@@ -104,11 +108,13 @@ const ProfilePage = () => {
           </div>
         )}
         <div className="mt-2">
-          <img
-            src={ profilePic ? URL.createObjectURL(profilePic) : profile.avatar}
-            alt={profile.name}
-            className="h-20 w-20 object-cover rounded-full border"
-          />
+          <Avatar sx={{ width: 80, height: 80, fontSize: 36 }}>
+            {profile.avatar ? (
+              <img src={profilePic ? URL.createObjectURL(profilePic) : profile.avatar} />
+            ) : (
+              profile.name?.charAt(0)
+            )}
+          </Avatar>
         </div>
 
         <div>

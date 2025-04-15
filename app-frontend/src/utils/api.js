@@ -184,11 +184,11 @@ export const submitAssignment = async (formData) => {
 }
 
 export const getStudentSubmissions = async (studentId) => {
-  return await axios.get(`${window.location.origin}/api/v1/submissions/${studentId}`);
+  return await axios.get(`${window.location.origin}/api/v1/submissions/s/${studentId}`);
 }
 
 export const getSubmissionsByAssignments = async (assignId) => {
-  return await axios.get(`${window.location.origin}/api/v1/submissions/${assignId}`);
+  return await axios.get(`${window.location.origin}/api/v1/submissions/a/${assignId}`);
 }
 /*---------------------------------------------------------------------------------------------------------------------------*/
 

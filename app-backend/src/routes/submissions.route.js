@@ -6,7 +6,7 @@ const { submitAssignment, getSubmissionsbyAssignment, getStudentSubmissions } = 
 
 //Submissions
 router.route("/").post( upload.array("files", 10), verifyJWT, submitAssignment);
-router.route("/:studentId").get(verifyJWT, getStudentSubmissions);
-router.route("/:assignId").get(verifyJWT, getSubmissionsbyAssignment);
+router.route("/s/:studentId").get(verifyJWT, getStudentSubmissions);
+router.route("/a/:assignId").get(verifyJWT, getSubmissionsbyAssignment);
 
 module.exports = router;

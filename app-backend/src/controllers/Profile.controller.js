@@ -4,6 +4,8 @@ const Teacher = require("../models/teacher.model.js");
 const ApiError = require("../utils/ApiError.js");
 const ApiResponse = require("../utils/ApiResponse.js");
 const asyncHandler = require("../utils/asyncHandler.js");
+const fs = require('fs');
+const path = require('path');
 
 //Get Profile
 const getProfile = asyncHandler(async (req, res) => {
@@ -54,11 +56,10 @@ const editProfile = asyncHandler(async (req, res) => {
     teacher_code,
   } = req.body;
 
-  console.log(req);
-  var avatar = null;
-  // if (req.file) {
-  //   avatar = `${req.protocol}://${req.get("host")}/uploads/${file.filename}`;
-  // }
+  // console.log(req);
+  if (req.file) {
+    avatar = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+  }
 
   const user = await User.findById(userId);
   if (!user) {
@@ -68,8 +69,23 @@ const editProfile = asyncHandler(async (req, res) => {
   // === Update user base info ===
   if (name) user.name = name;
   if (phone) user.phone = phone;
-  if (avatar) user.avatar = avatar;
   await user.save();
+  if (req.file) {
+    const oldAvatar = user.avatar;
+    const avatar = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+  
+    // Update user avatar
+    user.avatar = avatar;
+    await user.save();
+  
+    // Delete old avatar
+    if (oldAvatar) {
+      const oldAvatarPath = path.join(__dirname, `../../public/uploads/${oldAvatar.split('/uploads/')[1]}`);
+      if (fs.existsSync(oldAvatarPath)) {
+        fs.unlinkSync(oldAvatarPath);
+      }
+    }
+  } else await user.save();
 
   // === Update role-specific details ===
   if (user.role === "student") {
