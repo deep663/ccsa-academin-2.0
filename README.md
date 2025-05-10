@@ -34,14 +34,14 @@ The backend is built using Node.js, Express.js, and MongoDB. It provides a RESTf
 
 ### Frontend
 
-1. Clone the repository: `git clone [https://github.com/deep663/ccsa-academin-2.0.git`](https://github.com/deep663/ccsa-academin-2.0.git`)
+1. Clone the repository: `git clone https://github.com/deep663/ccsa-academin-2.0.git`
 2. Change directory to Frontend: `cd app-frontend`
 3. Install dependencies: `npm install` or `yarn install`
 4. Start the development server: `npm start` or `yarn start`
 
 ### Backend
 
-1. Clone the repository: `git clone [https://github.com/deep663/ccsa-academin-2.0.git`](https://github.com/deep663/ccsa-academin-2.0.git`)
+1. Clone the repository: `git clone https://github.com/deep663/ccsa-academin-2.0.git`
 2. Change directory to Backend: `cd app-backend`
 3. Install dependencies: `npm install` or `yarn install`
 4. Start the development server: `node src/index.js`
