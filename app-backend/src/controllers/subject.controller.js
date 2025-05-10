@@ -139,8 +139,16 @@ const deleteSubject = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Subject deleted successfully"));
 });
 
+const getTotalSubjects = asyncHandler(async (req, res) => {
+  const subjects = await Subject.countDocuments();
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Subjects fetched successfully", subjects));
+});
+
 module.exports = {
   getSubjects,
+  getTotalSubjects,
   getSemesterSubjects,
   getTeacherSubjects,
   createSubject,

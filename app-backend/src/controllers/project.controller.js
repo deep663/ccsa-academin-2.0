@@ -17,13 +17,7 @@ const submitProject = asyncHandler(async (req, res) => {
     files,
   } = req.body;
 
-  if (
-    !course ||
-    !semester ||
-    !student ||
-    !project_name ||
-    !description
-  ) {
+  if (!course || !semester || !student || !project_name || !description) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -76,25 +70,29 @@ const getProjectSubmissions = asyncHandler(async (req, res) => {
 });
 
 const getStudentProjects = asyncHandler(async (req, res) => {
-  const studentProjects = await Project.find({ student: req.params.studentId })
+  const studentProjects = await Project.find({ student: req.params.studentId });
   return res
     .status(200)
     .json(
-      new ApiResponse(200, "Student projects fetched successfully", studentProjects)
+      new ApiResponse(
+        200,
+        "Student projects fetched successfully",
+        studentProjects
+      )
     );
 });
 
 const deleteProjectSubmission = asyncHandler(async (req, res) => {
-    const project = await Project.findById(req.params.id);
-    if (!project) throw new ApiError(404, "Project not found");
-  
-    await project.deleteOne();
-    return res.status(200).json(new ApiResponse(200, {}, "Deleted successfully"));
-  });
+  const project = await Project.findById(req.params.id);
+  if (!project) throw new ApiError(404, "Project not found");
+
+  await project.deleteOne();
+  return res.status(200).json(new ApiResponse(200, {}, "Deleted successfully"));
+});
 
 module.exports = {
   submitProject,
   getStudentProjects,
   getProjectSubmissions,
-  deleteProjectSubmission
+  deleteProjectSubmission,
 };

@@ -15,20 +15,17 @@ import {
   ListItemText,
 } from "@mui/material";
 import { FaRegBell } from "react-icons/fa";
-
-
+import {
+  getAssignmentReminders,
+  getRecentMarksUpdates,
+  getRecentNotesUpdates,
+} from "../../utils/api"; 
 
 const StudentDashboard = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [student, setStudent] = useState(null);
-
-
-  const notifications = [
-    "Assignment for DBMS due on 18th April",
-    "Your marks for MCA Sem 1 Internal are uploaded",
-    "Project submission deadline extended to 30th April",
-  ];
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     const fetchStudent = async () => {
@@ -49,6 +46,32 @@ const StudentDashboard = () => {
 
     fetchStudent();
   }, [dispatch]);
+
+  // Fetch notifications
+  useEffect(() => {
+    if (student) {
+      const fetchNotifications = async () => {
+        try {
+          const assignmentReminders = await getAssignmentReminders(student.course, student.semester);
+          const recentMarksUpdates = await getRecentMarksUpdates(student.course, student.semester);
+          const recentNotesUpdates = await getRecentNotesUpdates(student.course, student.semester);
+          console.log(assignmentReminders);
+
+          const allNotifications = [
+            ...assignmentReminders.data.map((reminder) => `Assignment: ${reminder.subject} due on ${reminder.deadline}`),
+            ...recentMarksUpdates.data.map((mark) => `Marks updated for ${mark.subject} (${mark.marksObtained}/${mark.totalMarks})`),
+            ...recentNotesUpdates.data.map((note) => `New notes for ${note.subject} by ${note.teacher}`),
+          ];
+
+          setNotifications(allNotifications);
+        } catch (err) {
+          console.error("Error fetching notifications:", err);
+        }
+      };
+
+      fetchNotifications();
+    }
+  }, [student]);
 
   if (loading) {
     return (
@@ -71,25 +94,25 @@ const StudentDashboard = () => {
             <Grid container spacing={2}>
               <Grid item>
                 <Avatar
-                  sx={{ width: 80, height: 80, fontSize: 36, }}
-                  src={student.user.avatarUrl || ""}
+                  sx={{ width: 80, height: 80, fontSize: 36 }}
+                  src={student?.user.avatarUrl || ""}
                 >
-                  {student.user?.name?.charAt(0)}
+                  {student?.user?.name?.charAt(0)}
                 </Avatar>
               </Grid>
               <Grid item>
-                <Typography variant="h6">{student.user.name}</Typography>
+                <Typography variant="h6">{student?.user.name}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Roll No: {student.roll_no}
+                  Roll No: {student?.roll_no}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Course: {student.course?.toUpperCase()}
+                  Course: {student?.course?.toUpperCase()}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Semester: {student.semester}
+                  Semester: {student?.semester}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Email: {student.user.email}
+                  Email: {student?.user.email}
                 </Typography>
               </Grid>
             </Grid>
@@ -105,11 +128,17 @@ const StudentDashboard = () => {
             </Box>
             <Divider sx={{ mb: 2 }} />
             <List>
-              {notifications.map((note, idx) => (
-                <ListItem key={idx} disablePadding>
-                  <ListItemText primary={`• ${note}`} />
+              {notifications.length === 0 ? (
+                <ListItem>
+                  <ListItemText primary="No new notifications" />
                 </ListItem>
-              ))}
+              ) : (
+                notifications.map((note, idx) => (
+                  <ListItem key={idx} disablePadding>
+                    <ListItemText primary={`• ${note}`} />
+                  </ListItem>
+                ))
+              )}
             </List>
           </Paper>
         </Grid>

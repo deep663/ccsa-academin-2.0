@@ -19,7 +19,6 @@ const studentSchema = new mongoose.Schema(
         },
         reg_no: {
             type: String,
-            unique: true,
         },
         enrollment_year: {
             type: Number,

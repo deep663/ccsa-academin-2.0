@@ -20,53 +20,21 @@ const getTeacher = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Teacher fetched successfully", teacher));
 });
 
-const createTeacher = asyncHandler(async (req, res) => {
-  const teacher_code = req.body;
-
-  if (!teacher_code) {
-    throw new ApiError(400, "All fields are required");
-  }
-
-  const existedTeacher = await Teacher.findOne({ email });
-  if (existedTeacher) {
-    throw new ApiError(409, "Email already exists");
-  }
-
-  const teacher = await Teacher.create({
-    user: req.user._id,
-    teacher_code
-  });
-
-  if (!teacher) {
-    throw new ApiError(500, "Failed to create teacher");
-  }
-
-  return res
-    .status(201)
-    .json(new ApiResponse(201, "Teacher created successfully", teacher));
-});
 
 const updateTeacher = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const teacher_code = req.body;
-
-  const teacher = await Teacher.findByIdAndUpdate(
-    { _id: id },
-    {
-      $set: teacher_code,  
-    }, 
-    {
-    new: true,
-  }
-);
+  const teacherId = req.params.teacherId;
+  const teacher = await Teacher.findById(teacherId);
 
   if (!teacher) {
-    throw new ApiError(404, "Teacher not found");
+    return res.status(404).json({ message: "Teacher not found" });
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Teacher updated successfully", teacher));
+  const updatedTeacher = await Teacher.findByIdAndUpdate(teacherId, {
+    expertise: req.body.expertise,
+    educational_qualifications: req.body.educational_qualifications
+  }, { new: true });
+
+  res.status(200).json({ message: "Teacher profile updated successfully", updatedTeacher });
 });
 
 const deleteTeacher = asyncHandler(async (req, res) => {
@@ -86,7 +54,6 @@ const deleteTeacher = asyncHandler(async (req, res) => {
 module.exports = {
   getTeachers,
   getTeacher,
-  createTeacher,
   updateTeacher,
   deleteTeacher,
 };

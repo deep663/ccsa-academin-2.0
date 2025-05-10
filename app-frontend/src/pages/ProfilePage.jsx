@@ -2,10 +2,21 @@ import { useEffect, useState } from "react";
 import { editProfile, getProfile } from "../utils/api";
 import InlineLoader from "../components/InlineLoader";
 import { useNavigate } from "react-router-dom";
-import { Avatar, Button } from "@mui/material";
 import { FaArrowLeft } from "react-icons/fa";
 import { updateField } from "../utils/userSlice";
 import { useDispatch } from "react-redux";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  Grid,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+  IconButton,
+} from "@mui/material";
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
@@ -48,6 +59,33 @@ const ProfilePage = () => {
     if (name === "course") fetchSemesters(value);
   };
 
+  const handleQualificationChange = (index, field, value) => {
+    const updatedQualifications = [...(form.educational_qualifications || [])];
+    updatedQualifications[index][field] = value;
+    setForm((prev) => ({
+      ...prev,
+      educational_qualifications: updatedQualifications,
+    }));
+  };
+
+  const addQualification = () => {
+    const updatedQualifications = [...(form.educational_qualifications || [])];
+    updatedQualifications.push({ degree: "", institution: "" });
+    setForm((prev) => ({
+      ...prev,
+      educational_qualifications: updatedQualifications,
+    }));
+  };
+
+  const removeQualification = (index) => {
+    const updatedQualifications = [...(form.educational_qualifications || [])];
+    updatedQualifications.splice(index, 1);
+    setForm((prev) => ({
+      ...prev,
+      educational_qualifications: updatedQualifications,
+    }));
+  };
+
   const handleUpdate = async () => {
     try {
       setLoading(true);
@@ -55,7 +93,11 @@ const ProfilePage = () => {
 
       for (const key in form) {
         if (form[key] !== undefined && form[key] !== null) {
-          formData.append(key, form[key]);
+          if (key === "educational_qualifications") {
+            formData.append(key, JSON.stringify(form[key]));
+          } else {
+            formData.append(key, form[key]);
+          }
         }
       }
 
@@ -83,189 +125,282 @@ const ProfilePage = () => {
     return <div className="p-4 text-red-600">Profile not found</div>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-xl">
-      <div className="absolute left-10">
-        <Button
-          variant="outlined"
-          startIcon={<FaArrowLeft />}
-          onClick={() => navigate(-1)}
-        >
-          Back
-        </Button>
+    <Card
+      sx={{ maxWidth: 900, margin: "auto", mt: 4, p: 3, position: "relative" }}
+    >
+      <div className="flex items-center justify-items-start">
+        <IconButton onClick={() => navigate(-1)} color="primary">
+          <FaArrowLeft />
+        </IconButton>
+
+        <Typography variant="h5" fontWeight="bold">
+          My Profile
+        </Typography>
       </div>
 
-      <h2 className="text-2xl font-bold mb-4">My Profile</h2>
-      <div className="space-y-4">
-        {editing && (
-          <div>
-            <label className="block font-medium">Profile Picture</label>
-            <input
-              type="file"
-              className="w-full border px-3 py-2 rounded-md bg-white"
-              onChange={(e) => setProfilePic(e.target.files[0])}
-              disabled={!editing}
-            />
-          </div>
-        )}
-        <div className="mt-2">
-          <Avatar sx={{ width: 80, height: 80, fontSize: 36 }}>
-            {profile.avatar ? (
-              <img src={profilePic ? URL.createObjectURL(profilePic) : profile.avatar} />
-            ) : (
-              profile.name?.charAt(0)
-            )}
-          </Avatar>
-        </div>
+      <Grid container spacing={3}>
+        {/* Profile Pic */}
+        <Grid item xs={12} sm={6}>
+          {editing && (
+            <>
+              <Typography variant="body1" fontWeight="medium">
+                Profile Picture
+              </Typography>
+              <input
+                type="file"
+                onChange={(e) => setProfilePic(e.target.files[0])}
+                disabled={!editing}
+                style={{ marginTop: 8 }}
+              />
+            </>
+          )}
+          <Box mt={2}>
+            <Avatar sx={{ width: 80, height: 80, fontSize: 36 }}>
+              {profile.avatar ? (
+                <img
+                  src={
+                    profilePic
+                      ? URL.createObjectURL(profilePic)
+                      : profile.avatar
+                  }
+                  alt="avatar"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              ) : (
+                profile.name?.charAt(0)
+              )}
+            </Avatar>
+          </Box>
+        </Grid>
 
-        <div>
-          <label className="block font-medium">Name</label>
-          <input
-            className="w-full border px-3 py-2 rounded-md"
+        {/* Name */}
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Name"
+            fullWidth
             name="name"
             value={form.name || ""}
             onChange={handleChange}
             disabled={!editing}
           />
-        </div>
+        </Grid>
 
-        <div>
-          <label className="block font-medium">Email</label>
-          <input
+        {/* Email */}
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Email"
+            fullWidth
             name="email"
-            className="w-full border px-3 py-2 rounded-md bg-gray-100"
             value={form.email || ""}
             disabled
           />
-        </div>
+        </Grid>
 
-        <div>
-          <label className="block font-medium">Phone</label>
-          <input
-            className="w-full border px-3 py-2 rounded-md"
+        {/* Phone */}
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Phone"
+            fullWidth
             name="phone"
             value={form.phone || ""}
             onChange={handleChange}
             disabled={!editing}
           />
-        </div>
+        </Grid>
 
+        {/* Student Fields */}
         {profile.role === "student" && (
           <>
-            <div>
-              <label className="block font-medium">Roll No</label>
-              <input
-                className="w-full border px-3 py-2 rounded-md"
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Roll No"
+                fullWidth
                 name="roll_no"
                 value={form.roll_no || ""}
                 onChange={handleChange}
                 disabled={!editing}
               />
-            </div>
+            </Grid>
 
-            <div>
-              <label className="block font-medium">Registration No</label>
-              <input
-                className="w-full border px-3 py-2 rounded-md"
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Registration No"
+                fullWidth
                 name="reg_no"
                 value={form.reg_no || ""}
                 onChange={handleChange}
                 disabled={!editing}
               />
-            </div>
+            </Grid>
 
-            <div>
-              <label className="block font-medium">Course</label>
-              <select
-                className="w-full border px-3 py-2 rounded-md"
+            <Grid item xs={12} sm={6}>
+              <Select
+                fullWidth
                 name="course"
                 value={form.course || ""}
                 onChange={handleChange}
                 disabled={!editing}
+                displayEmpty
               >
-                <option value="">Select</option>
-                <option value="bca">BCA</option>
-                <option value="mca">MCA</option>
-              </select>
-            </div>
+                <MenuItem value="">Select Course</MenuItem>
+                <MenuItem value="bca">BCA</MenuItem>
+                <MenuItem value="mca">MCA</MenuItem>
+              </Select>
+            </Grid>
 
-            <div>
-              <label className="block font-medium">Semester</label>
-              <select
-                type="number"
-                className="w-full border px-3 py-2 rounded-md"
+            <Grid item xs={12} sm={6}>
+              <Select
+                fullWidth
                 name="semester"
                 value={form.semester || ""}
                 onChange={handleChange}
                 disabled={!editing}
+                displayEmpty
               >
-                <option value="">Select</option>
+                <MenuItem value="">Select Semester</MenuItem>
                 {semester.map((sem) => (
-                  <option key={sem} value={sem}>
+                  <MenuItem key={sem} value={sem}>
                     Semester {sem}
-                  </option>
+                  </MenuItem>
                 ))}
-              </select>
-            </div>
+              </Select>
+            </Grid>
 
-            <div>
-              <label className="block font-medium">Enrollment Year</label>
-              <input
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Enrollment Year"
                 type="number"
-                className="w-full border px-3 py-2 rounded-md"
                 name="enrollment_year"
+                fullWidth
                 value={form.enrollment_year || ""}
                 onChange={handleChange}
                 disabled={!editing}
-                min="1980"
-                max={new Date().getFullYear()}
+                inputProps={{
+                  min: 1980,
+                  max: new Date().getFullYear(),
+                }}
               />
-            </div>
+            </Grid>
           </>
         )}
 
+        {/* Teacher Fields */}
         {profile.role === "teacher" && (
-          <div>
-            <label className="block font-medium">Teacher Code</label>
-            <input
-              className="w-full border px-3 py-2 rounded-md"
-              name="teacher_code"
-              value={form.teacher_code || ""}
-              onChange={handleChange}
-              disabled={!editing}
-            />
-          </div>
+          <>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Expertise"
+                fullWidth
+                name="expertise"
+                value={form.expertise || ""}
+                onChange={handleChange}
+                disabled={!editing}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography variant="subtitle1" fontWeight="medium" mb={1}>
+                Educational Qualifications
+              </Typography>
+              {(form.educational_qualifications || []).map((qual, index) => (
+                <Grid
+                  container
+                  spacing={2}
+                  alignItems="center"
+                  key={index}
+                  mb={1}
+                >
+                  <Grid item xs={12} sm={5}>
+                    <TextField
+                      placeholder="Degree"
+                      fullWidth
+                      value={qual.degree}
+                      onChange={(e) =>
+                        handleQualificationChange(
+                          index,
+                          "degree",
+                          e.target.value
+                        )
+                      }
+                      disabled={!editing}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={5}>
+                    <TextField
+                      placeholder="Institution"
+                      fullWidth
+                      value={qual.institution}
+                      onChange={(e) =>
+                        handleQualificationChange(
+                          index,
+                          "institution",
+                          e.target.value
+                        )
+                      }
+                      disabled={!editing}
+                    />
+                  </Grid>
+                  {editing && (
+                    <Grid item xs={12} sm={2}>
+                      <Button
+                        color="error"
+                        onClick={() => removeQualification(index)}
+                      >
+                        Remove
+                      </Button>
+                    </Grid>
+                  )}
+                </Grid>
+              ))}
+              {editing && (
+                <Button
+                  variant="text"
+                  onClick={addQualification}
+                  sx={{ mt: 1 }}
+                >
+                  + Add Qualification
+                </Button>
+              )}
+            </Grid>
+          </>
         )}
 
-        <div className="flex gap-4 mt-4">
-          {!editing ? (
-            <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-md"
-              onClick={() => setEditing(true)}
-            >
-              Edit Profile
-            </button>
-          ) : (
-            <>
-              <button
-                className="bg-green-600 text-white px-4 py-2 rounded-md"
-                onClick={handleUpdate}
+        {/* Action Buttons */}
+        <Grid item xs={12}>
+          <Box display="flex" gap={2} mt={2}>
+            {!editing ? (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setEditing(true)}
               >
-                Save Changes
-              </button>
-              <button
-                className="bg-gray-400 text-white px-4 py-2 rounded-md"
-                onClick={() => {
-                  setEditing(false);
-                  setForm(profile); // reset form
-                }}
-              >
-                Cancel
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
+                Edit Profile
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleUpdate}
+                >
+                  Save Changes
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => {
+                    setEditing(false);
+                    setForm(profile);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
+          </Box>
+        </Grid>
+      </Grid>
+    </Card>
   );
 };
 

@@ -39,9 +39,8 @@ const createNote = asyncHandler(async (req, res) => {
   }
 
   const fileLinks = req.files.map((file) => {
-    return `${req.protocol}://${req.get("host")}/uploads/${file.filename}` 
+    return `${req.protocol}://${req.get("host")}/uploads/${file.filename}`;
   });
-
 
   const noteData = {
     title: req.body.title,
@@ -107,7 +106,50 @@ const deleteNote = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Note and associated files deleted successfully"));
+    .json(
+      new ApiResponse(200, "Note and associated files deleted successfully")
+    );
+});
+
+const getTotalNotes = asyncHandler(async (req, res) => {
+  const totalNotes = await Note.countDocuments({
+    teacher: req.params.teacherId,
+  });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Total notes fetched successfully", totalNotes));
+});
+
+const getRecentNotesUpdates = asyncHandler(async (req, res) => {
+  const { course, semester } = req.params; // Get course and semester from query params
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+  const notes = await Note.find({
+    createdAt: { $gte: sevenDaysAgo },
+    course, // Filter by course
+    semester, // Filter by semester
+  })
+    .populate("subject teacher")
+    .sort({ createdAt: -1 });
+
+  const recentUpdates = notes.map((note) => {
+    return {
+      note: note._id,
+      subject: note.subject.name,
+      teacher: note.teacher.user.name,
+      title: note.title,
+    };
+  });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        "Recent notes updates fetched successfully",
+        recentUpdates
+      )
+    );
 });
 
 module.exports = {
@@ -117,4 +159,6 @@ module.exports = {
   createNote,
   updateNote,
   deleteNote,
+  getTotalNotes,
+  getRecentNotesUpdates
 };

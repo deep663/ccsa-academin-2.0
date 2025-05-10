@@ -10,6 +10,7 @@ import { deleteUser, getUsers, verifyUser } from "../../utils/api";
 import InlineLoader from "../InlineLoader";
 import ConfirmationToast from "../ConfirmationToast";
 import AddUsers from "./AddUsers";
+import { Button } from "@mui/material";
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -21,8 +22,7 @@ const ManageUsers = () => {
   const [showToast, setShowToast] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [toast, setToast] = useState("");
-  const [showAdd, setShowAdd] = useState (false);
-
+  const [showAdd, setShowAdd] = useState(false);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,7 +64,11 @@ const ManageUsers = () => {
       await verifyUser(selectedUserId);
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
-          user._id === selectedUserId ? user.isVerified ? user.isVerified = false: user.isVerified = true : user
+          user._id === selectedUserId
+            ? user.isVerified
+              ? (user.isVerified = false)
+              : (user.isVerified = true)
+            : user
         )
       );
     } catch (error) {
@@ -77,8 +81,8 @@ const ManageUsers = () => {
   };
 
   const handleAdd = async () => {
-    setShowAdd((prev) => !prev)
-  }
+    setShowAdd((prev) => !prev);
+  };
 
   const handleDelete = async () => {
     setShowToast(false);
@@ -190,10 +194,16 @@ const ManageUsers = () => {
         </button>
       </div>
 
-      {/* Total Count Display */}
-      <div className="text-gray-700 font-medium mb-2">
-        Showing {totalFilteredUsers}{" "}
-        {totalFilteredUsers === 1 ? "user" : "users"}
+      <div className="flex justify-between mb-4">
+        {/* Total Count Display */}
+        <div className="text-gray-700 font-medium mb-2">
+          Showing {totalFilteredUsers}{" "}
+          {totalFilteredUsers === 1 ? "user" : "users"}
+        </div>
+
+        <div className="text-gray-700 font-normal">
+          <Button onClick={() => fetchUsers()} variant="contained">REFRESH</Button>
+        </div>
       </div>
 
       {/* Users Table */}
@@ -285,11 +295,14 @@ const ManageUsers = () => {
       </div>
 
       {/* Add User Button */}
-      <button onClick={() => handleAdd()} className="mt-4 bg-[#30834d] text-white px-4 py-2 rounded cursor-pointer">
+      <button
+        onClick={() => handleAdd()}
+        className="mt-4 bg-[#30834d] text-white px-4 py-2 rounded cursor-pointer"
+      >
         Add New User
       </button>
 
-      {showAdd && <AddUsers onClose={()=>setShowAdd(false)}/>}
+      {showAdd && <AddUsers onClose={() => setShowAdd(false)} />}
     </div>
   );
 };

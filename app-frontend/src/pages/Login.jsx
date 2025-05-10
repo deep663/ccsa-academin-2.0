@@ -40,16 +40,34 @@ const LoginPage = () => {
     try {
       setLoading(true);
       const response = await signin(email, password);
-      // console.log(response)
+
       localStorage.setItem("user", JSON.stringify(response.data.data));
       dispatch(login(response.data.data));
-      setToast({ show: true, message: "Login successful!", type: "success",  });
-    } catch (error) {
+
       setToast({
         show: true,
-        message: error.response?.data?.message || "Login failed",
+        message: "Login successful!",
+        type: "success",
+      });
+    } catch (error) {
+      const status = error.response?.status;
+      const defaultMessage = "Login failed";
+
+      let errorMessage = defaultMessage;
+
+      if (status === 401) {
+        errorMessage = "Not verified or Incorrect Password";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+
+      setToast({
+        show: true,
+        message: errorMessage,
         type: "error",
       });
+    } finally {
+      setLoading(false);
     }
 
     // Clear form after submission (optional)
@@ -57,11 +75,8 @@ const LoginPage = () => {
     setPassword("");
     setErrors({});
     setLoading(false);
-
-
   };
 
- 
   return (
     <div className="relative flex min-h-screen items-center justify-center">
       {/* Background Image with Blur Effect */}
@@ -73,14 +88,14 @@ const LoginPage = () => {
         <div className="absolute inset-0 backdrop-blur-sm" />
       </div>
 
-      {loading && <OverlayLoading/>}
+      {loading && <OverlayLoading />}
 
       {toast.show && (
         <Toaster
           message={toast.message}
           type={toast.type}
           onClose={() => setToast({ show: false })}
-          redirect={(toast.type === "success") ? true : false}
+          redirect={toast.type === "success" ? true : false}
           redirectLink={"/dashboard"}
           redirectButtonText={"Dashboard"}
         />

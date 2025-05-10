@@ -45,6 +45,10 @@ export const verifyUser = async (userId) => {
 export const deleteUser = async (userId) => {
   return await axios.delete(`${window.location.origin}/api/v1/users/${userId}`);
 };
+
+export const usersCounts = async () => {
+  return await axios.get(`${window.location.origin}/api/v1/users/counts`); 
+}
 /*---------------------------------------------------------------------------------------------------------------------------*/
 
 //Subjects API
@@ -70,6 +74,10 @@ export const updateSubject = async (subjectId,subject) => {
 
 export const deleteSubject = async (subjectId) => {
   return await axios.delete(`${window.location.origin}/api/v1/subjects/${subjectId}`);
+}
+
+export const getTotalSubjects = async () => {
+  return await axios.get(`${window.location.origin}/api/v1/subjects/count`);
 }
 /*---------------------------------------------------------------------------------------------------------------------------*/
 
@@ -119,6 +127,14 @@ export const updateNote = async (noteId, note) => {
 export const deleteNote = async (noteId) => {
   return await axios.delete(`${window.location.origin}/api/v1/notes/${noteId}`);
 }
+
+export const getNotesCount = async (teacherId) => {
+  return await axios.get(`${window.location.origin}/api/v1/notes/count/${teacherId}`);
+}
+
+export const getRecentNotesUpdates = async (course, semester) => {
+  return await axios.get(`${window.location.origin}/api/v1/notes/recent-updates/${course}/${semester}`);
+}
 /*---------------------------------------------------------------------------------------------------------------------------*/
 
 //Assignments API
@@ -144,6 +160,14 @@ export const updateAssignment = async (assignmentId, assignment) => {
 
 export const deleteAssignment = async (assignmentId) => {
   return await axios.delete(`${window.location.origin}/api/v1/assignments/${assignmentId}`);
+}
+
+export const getAssignmentsCount = async (teacherId) => {
+  return await axios.get(`${window.location.origin}/api/v1/assignments/count/${teacherId}`);
+}
+
+export const getAssignmentReminders = async (course, semester) => {
+  return await axios.get(`${window.location.origin}/api/v1/assignments/reminders/${course}/${semester}`);
 }
 /*---------------------------------------------------------------------------------------------------------------------------*/
 
@@ -172,6 +196,10 @@ export const updateMarks = async (marksId, marks) => {
 export const addMarks = async (marks) => {
   return await axios.post(`${window.location.origin}/api/v1/marks`, marks);
 }
+
+export const getRecentMarksUpdates = async (course, semester) => {
+  return await axios.get(`${window.location.origin}/api/v1/marks/recent-updates/${course}/${semester}`);
+}
 /*---------------------------------------------------------------------------------------------------------------------------*/
 
 //Assignment Submission API
@@ -189,6 +217,14 @@ export const getStudentSubmissions = async (studentId) => {
 
 export const getSubmissionsByAssignments = async (assignId) => {
   return await axios.get(`${window.location.origin}/api/v1/submissions/a/${assignId}`);
+}
+
+export const getRecentSubmissions = async (teacherId) => {
+  return await axios.get(`${window.location.origin}/api/v1/submissions/recent/${teacherId}`);
+}
+
+export const getTodaySubmissions = async (teacherId) => {
+  return await axios.get(`${window.location.origin}/api/v1/submissions/today/${teacherId}`);
 }
 /*---------------------------------------------------------------------------------------------------------------------------*/
 

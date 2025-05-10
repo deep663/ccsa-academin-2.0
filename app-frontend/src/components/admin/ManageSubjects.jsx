@@ -9,6 +9,7 @@ import {
 import { GrRefresh } from "react-icons/gr";
 import InlineLoader from "../InlineLoader";
 import Toaster from "../Toaster";
+import { Button } from "@mui/material";
 
 const ManageSubjects = () => {
   let sems = 8;
@@ -155,12 +156,13 @@ const ManageSubjects = () => {
             onChange={handleInputChange}
             className="p-2 border rounded"
           >
+            <option value="">Select Subject Type</option>
             <option value="theory">Theory</option>
             <option value="practical">Practical</option>
           </select>
           <select
             name="course"
-            value={formData.type}
+            value={formData.course}
             onChange={handleInputChange}
             className="p-2 border rounded"
           >
@@ -212,12 +214,13 @@ const ManageSubjects = () => {
       )}
 
       <div className="my-4 w-full flex items-center ">
-        <button
+        <Button
           onClick={() => fetchSubjects()}
-          className="px-2 py-1 cursor-pointer rounded border-2 border-gray-400"
+          variant="contained"
+          className="gap-2"
         >
-          <GrRefresh className="w-6 h-6" />
-        </button>
+          <GrRefresh className="w-6 h-6" /> REFRESH
+        </Button>
       </div>
       {/* Subjects List */}
       <table className="w-full border-collapse border border-gray-300">

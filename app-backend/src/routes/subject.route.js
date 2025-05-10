@@ -7,7 +7,8 @@ const {
     updateSubject,
     deleteSubject,
     getSemesterSubjects,
-    getTeacherSubjects
+    getTeacherSubjects,
+    getTotalSubjects
 } = require("../controllers/subject.controller.js");
 
 router.route("/").get(verifyJWT, getSubjects);
@@ -16,6 +17,7 @@ router.route("/:course/:semester/:teacherId").get(verifyJWT, roleMiddleware(["te
 router.route("/").post(verifyJWT, roleMiddleware(["admin","teacher"]), createSubject);
 router.route("/:id").patch(verifyJWT, roleMiddleware(["admin","teacher"]), updateSubject);
 router.route("/:id").delete(verifyJWT, roleMiddleware(["admin", "teacher"]), deleteSubject);
+router.route("/count").get(verifyJWT, roleMiddleware(["admin"]), getTotalSubjects);
 
 module.exports = router;
 

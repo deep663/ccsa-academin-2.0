@@ -13,6 +13,7 @@ const {
   deleteUser,
   verifyUser,
   getUsers,
+  getUsersCount,
 } = require("../controllers/user.controller.js");
 const roleMiddleware = require("../middlewares/access.middleware.js");
 const { getProfile, editProfile } = require("../controllers/Profile.controller.js");
@@ -39,5 +40,6 @@ router
 router
   .route("/get-teachers")
   .patch(verifyJWT, roleMiddleware(["admin"]), verifyUser);
+router.route("/counts").get(verifyJWT, roleMiddleware(["admin"]), getUsersCount);
 
 module.exports = router;

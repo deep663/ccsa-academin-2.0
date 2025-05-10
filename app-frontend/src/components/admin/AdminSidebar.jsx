@@ -26,11 +26,11 @@ const AdminSidebar = () => {
             <FaClipboardList /> Manage Couses
           </Link>
         </li> */}
-        <li>
+        {/* <li>
           <Link to="/dashboard/admin/reports" className="flex items-center gap-3 hover:text-[#30834d]">
             <FaChartBar /> View Reports
           </Link>
-        </li>
+        </li> */}
       </ul>
     </div>
   );

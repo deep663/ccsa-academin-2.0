@@ -4,8 +4,8 @@ const Teacher = require("../models/teacher.model.js");
 const ApiError = require("../utils/ApiError.js");
 const ApiResponse = require("../utils/ApiResponse.js");
 const asyncHandler = require("../utils/asyncHandler.js");
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 //Get Profile
 const getProfile = asyncHandler(async (req, res) => {
@@ -39,7 +39,7 @@ const getProfile = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Profile fetched successfully", profileData,));
+    .json(new ApiResponse(200, "Profile fetched successfully", profileData));
 });
 
 // POST /edit-profile
@@ -58,7 +58,9 @@ const editProfile = asyncHandler(async (req, res) => {
 
   // console.log(req);
   if (req.file) {
-    avatar = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+    avatar = `${req.protocol}://${req.get("host")}/uploads/${
+      req.file.filename
+    }`;
   }
 
   const user = await User.findById(userId);
@@ -72,15 +74,20 @@ const editProfile = asyncHandler(async (req, res) => {
   await user.save();
   if (req.file) {
     const oldAvatar = user.avatar;
-    const avatar = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-  
+    const avatar = `${req.protocol}://${req.get("host")}/uploads/${
+      req.file.filename
+    }`;
+
     // Update user avatar
     user.avatar = avatar;
     await user.save();
-  
+
     // Delete old avatar
     if (oldAvatar) {
-      const oldAvatarPath = path.join(__dirname, `../../public/uploads/${oldAvatar.split('/uploads/')[1]}`);
+      const oldAvatarPath = path.join(
+        __dirname,
+        `../../public/uploads/${oldAvatar.split("/uploads/")[1]}`
+      );
       if (fs.existsSync(oldAvatarPath)) {
         fs.unlinkSync(oldAvatarPath);
       }
@@ -106,7 +113,26 @@ const editProfile = asyncHandler(async (req, res) => {
     if (!teacher) {
       throw new ApiError(404, "Teacher record not found");
     }
+
     if (teacher_code) teacher.teacher_code = teacher_code;
+    if (req.body.expertise) teacher.expertise = req.body.expertise;
+
+    // Parse educational_qualifications if it exists
+    if (req.body.educational_qualifications) {
+      let qualifications;
+      try {
+        qualifications = JSON.parse(req.body.educational_qualifications);
+        if (Array.isArray(qualifications)) {
+          teacher.educational_qualifications = qualifications.map((item) => ({
+            degree: item.degree,
+            institution: item.institution,
+          }));
+        }
+      } catch (e) {
+        console.error("Invalid educational_qualifications JSON");
+      }
+    }
+
     await teacher.save();
   }
 

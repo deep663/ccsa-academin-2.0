@@ -20,8 +20,10 @@ const getAssignmentsByTeacherId = asyncHandler(async (req, res) => {
 const getAssignments = asyncHandler(async (req, res) => {
   const assignments = await Assignment.find({
     course: req.params.course,
-    semester: req.params.semester
-  }).populate("subject", ("_id", "name")).sort({ createdAt: -1 });
+    semester: req.params.semester,
+  })
+    .populate("subject", ("_id", "name"))
+    .sort({ createdAt: -1 });
   return res
     .status(200)
     .json(
@@ -47,7 +49,7 @@ const createAssignment = asyncHandler(async (req, res) => {
     subject: req.body.subject,
     semester: req.body.semester,
     course: req.body.course,
-  }
+  };
 
   const assignment = await Assignment.create(assignmentData);
 
@@ -56,12 +58,13 @@ const createAssignment = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Assignment created successfully", assignment));
 });
 
-
 const updateAssignment = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const updates = req.body;
 
-  const assignment = await Assignment.findByIdAndUpdate(id, updates, { new: true });
+  const assignment = await Assignment.findByIdAndUpdate(id, updates, {
+    new: true,
+  });
 
   if (!assignment) {
     throw new ApiError(404, "Assignment not found");
@@ -102,13 +105,67 @@ const deleteAssignment = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Assignment and associated files deleted successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        "Assignment and associated files deleted successfully"
+      )
+    );
+});
+
+const getTotalAssignments = asyncHandler(async (req, res) => {
+  const assignments = await Assignment.countDocuments({
+    teacher: req.params.teacherId,
+  });
+  console.log("Total assignments count invoked", assignments);
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, "Assignments fetched successfully", assignments)
+    );
+});
+
+const getAssignmentReminders = asyncHandler(async (req, res) => {
+  const { course, semester } = req.params; // Get course and semester from query params
+  const twoDaysFromNow = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
+  const twoDaysFromNowUTC = new Date(
+    twoDaysFromNow.getTime() + twoDaysFromNow.getTimezoneOffset() * 60 * 1000
+  );
+
+  const assignments = await Assignment.find({
+    due_date: { $lte: twoDaysFromNowUTC },
+    course, // Filter by course
+    semester, // Filter by semester
+  })
+    .populate("subject", ("_id", "name"))
+    .sort({ deadline: 1 });
+
+  const reminders = assignments.map((assignment) => {
+    return {
+      assignment: assignment._id,
+      deadline: assignment.due_date,
+      subject: assignment.subject.name,
+
+    };
+  });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        "Assignment reminders fetched successfully",
+        reminders
+      )
+    );
 });
 
 module.exports = {
   getAssignments,
-    getAssignmentsByTeacherId,
-    createAssignment,
-    updateAssignment,
-    deleteAssignment
-}
+  getAssignmentsByTeacherId,
+  createAssignment,
+  updateAssignment,
+  deleteAssignment,
+  getTotalAssignments,
+  getAssignmentReminders,
+};

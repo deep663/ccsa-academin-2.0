@@ -36,13 +36,6 @@ const getUsers = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Users fetched successfully", users));
 });
 
-const getTeachers = asyncHandler( async (req, res) => {
-  const teachers = await User.find({role: "teacher"});
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Teachers fetched successfully", teachers));
-});
-
 const registerUser = asyncHandler(async (req, res) => {
   // console.log(req.body);
   const { name, email, password, role } = req.body;
@@ -61,13 +54,13 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "Email already exist!");
   }
 
-  const avatar = `${req.protocol}://${req.get("host")}/uploads/${file.filename}`;
+  const avatar = req.file && `${req.protocol}://${req.get("host")}/uploads/${file?.filename}` || "";
 
   const user = await User.create({
     name,
     email,
     password,
-    avatar: avatar?.secure_url || "",
+    avatar: avatar|| "",
     role,
   });
 
@@ -108,6 +101,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
   if (!isPassValid) {
     throw new ApiError(401, "Invalid user credentials");
+  }
+
+  if (!user.isVerified) {
+    throw new ApiError(401, "User is not verified ! Please verify your account");
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -274,7 +271,21 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
-  await User.findByIdAndDelete(req.params.userId);
+  const user = await User.findById(req.params.userId);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  if (user.role === "admin") {
+    throw new ApiError(400, "Admin role is not allowed");
+  } else if (user.role === "teacher") {
+    await Teacher.findOneAndDelete({ user: req.params.userId });
+  } else if (user.role === "student") {
+    await Student.findOneAndDelete({ user: req.params.userId });
+  }
+
+  await User.findByIdAndDelete(user._id);
   return res
     .status(200)
     .json(new ApiResponse(200, "User deleted successfully"));
@@ -305,8 +316,27 @@ const verifyUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "User verified successfully", {user: updatedUser}));
 });
 
+const getUsersCount = asyncHandler(async (req, res) => {
+  const totalUsers = await User.countDocuments({isVerified: true});
+  const totalStudents = await User.countDocuments({role: "student", isVerified: true}); 
+  const totalTeachers = await User.countDocuments({role: "teacher", isVerified: true});
+  const unVerifiedUsers = await User.countDocuments({isVerified: false});
+
+  const data = {
+    totalUsers,
+    totalStudents,
+    totalTeachers,
+    unVerifiedUsers,
+  };
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Total users fetched successfully", data));
+});
+
 module.exports = {
   getUsers,
+  getUsersCount,
   registerUser,
   loginUser,
   logoutUser,
