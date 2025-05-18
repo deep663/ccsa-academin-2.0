@@ -8,7 +8,7 @@ const {
     deleteTeacher
 } = require("../controllers/teacher.controller.js");
 
-router.route("/").get(verifyJWT, roleMiddleware(["admin"]), getTeachers);
+router.route("/").get(verifyJWT , getTeachers);
 router.route("/teacher").get(verifyJWT, roleMiddleware(["teacher"]), getTeacher);
 router.route("/:id").patch(verifyJWT, roleMiddleware(["teacher"]), updateTeacher);
 router.route("/:id").delete(verifyJWT, roleMiddleware(["admin", "teacher"]), deleteTeacher);

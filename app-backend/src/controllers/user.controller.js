@@ -103,7 +103,8 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid user credentials");
   }
 
-  if (!user.isVerified) {
+
+  if (!user.isVerified && user.role !== "admin") {
     throw new ApiError(401, "User is not verified ! Please verify your account");
   }
 

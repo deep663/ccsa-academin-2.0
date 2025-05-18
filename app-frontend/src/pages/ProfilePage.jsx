@@ -288,6 +288,21 @@ const ProfilePage = () => {
         {profile.role === "teacher" && (
           <>
             <Grid item xs={12} sm={6}>
+              <Select
+                fullWidth
+                name="designation"
+                value={form.designation || ""}
+                onChange={handleChange}
+                disabled={!editing}
+                displayEmpty
+                >
+                  <MenuItem value="">Select Designation</MenuItem>
+                  <MenuItem value="Assistant Professor">Assistant Professor</MenuItem>
+                  <MenuItem value="Professor">Professor</MenuItem>
+                </Select>
+            </Grid>
+            
+            <Grid item xs={12} sm={6}>
               <TextField
                 label="Expertise"
                 fullWidth

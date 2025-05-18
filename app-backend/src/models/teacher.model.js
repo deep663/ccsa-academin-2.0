@@ -10,6 +10,9 @@ const teacherSchema = new mongoose.Schema(
     teacher_code: {
       type: String
     },
+    designation: {
+      type: String
+    },
     expertise: {
       type: String
     },

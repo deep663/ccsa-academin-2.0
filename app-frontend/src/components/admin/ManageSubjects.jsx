@@ -20,7 +20,7 @@ const ManageSubjects = () => {
   const [formData, setFormData] = useState({
     name: "",
     code: "",
-    type: "theory",
+    type: "",
     semester: 1,
     teacher: "",
     course: "",
@@ -73,13 +73,6 @@ const ManageSubjects = () => {
       } else {
         await createSubject(formData);
       }
-      setFormData({
-        name: "",
-        code: "",
-        type: "theory",
-        semester: 1,
-        teacher: "",
-      });
       setToast({ show: true, message: "Subject added successfully", type: "success" });
       setEditingSubjectId(null);
       fetchSubjects();
@@ -91,6 +84,13 @@ const ManageSubjects = () => {
         type: "error",
       });
     }finally{
+      setFormData({
+        name: "",
+        code: "",
+        type: "",
+        semester: 1,
+        teacher: "",
+      });
       setLoading(false)
     }
   };
@@ -239,7 +239,7 @@ const ManageSubjects = () => {
             <tr key={idx} className="text-center border">
               <td className="border p-2">{subject?.name}</td>
               <td className="border p-2">{subject?.code}</td>
-              <td className="border p-2">{subject?.type}</td>
+              <td className="border p-2">{subject?.type === "theory" ? "Theory" : "Practical"}</td>
               <td className="border p-2">{subject?.semester}</td>
               <td className="border p-2">
                 {subject?.teacher_name}

@@ -115,6 +115,7 @@ const editProfile = asyncHandler(async (req, res) => {
     }
 
     if (teacher_code) teacher.teacher_code = teacher_code;
+    if (req.body.designation) teacher.designation = req.body.designation;
     if (req.body.expertise) teacher.expertise = req.body.expertise;
 
     // Parse educational_qualifications if it exists
